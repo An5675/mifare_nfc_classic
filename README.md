@@ -1,16 +1,18 @@
-# mifare_nfc_classic
+Original project: https://github.com/MaldonadoAndres/mifare_nfc_classic
 
+# mifare_nfc_classic 0.2.3
+Fork making project compatible with (Dart 3)
 A Flutter plugin for Android for reading and writing NFC cards
 
 ## Notice
 
 - Only Mifare Classic
 - Only NfcA technology
-- Only works with default password
+- Only works with passwords if sector B
 
 ## Setup
 
-- Requires Android API level 19 or later.
+- Requires Android API level 31 or later.
 - Add [android.permission.NFC ](https://developer.android.com/reference/android/Manifest.permission.html#NFC) to your AndroidManifest.xml.
 
 ## Notes
