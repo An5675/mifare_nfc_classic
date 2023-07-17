@@ -51,7 +51,7 @@ int _blockCount = await MifareNfcClassic.blockCount;
 **Read a specific Sector**
 
 ```dart
-List<String> _sector = await MifareNfcClassic.readSector(sectorIndex:index,password:password)
+List<String> _sector = await MifareNfcClassic.readSector(sectorIndex: index, password: password)
 /*
 ["FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
 "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
@@ -63,7 +63,7 @@ List<String> _sector = await MifareNfcClassic.readSector(sectorIndex:index,passw
 **Read a specific Block of a specific Sector**
 
 ```dart
-String _block = await MifareNfcClassic.readBlock(blockIndex: _blockIndex,password:password);
+String _block = await MifareNfcClassic.readBlock(blockIndex: _blockIndex, password: password);
 /*
 "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
 */
@@ -74,7 +74,7 @@ String _block = await MifareNfcClassic.readBlock(blockIndex: _blockIndex,passwor
 Note: This operation take some seconds so leave the card close to the phone like for 2 seconds.
 
 ```dart
-List<List<String>> _card = await MifareNfcClassic.readAll(password:password);
+List<List<String>> _card = await MifareNfcClassic.readAll(password: password);
 /*
 [["FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
 "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
@@ -93,7 +93,7 @@ List<List<String>> _card = await MifareNfcClassic.readAll(password:password);
 **Write a specific Block of a specific Sector**
 
 ```dart
-bool didWrite = await  MifareNfcClassic.writeBlock(blockIndex: _blockIndex,message: _message,password:password);
+bool didWrite = await  MifareNfcClassic.writeBlock(blockIndex: _blockIndex, message: _message, password: password);
 /*
 didWrite indicates if the operation completed successfully or not.
 */
@@ -102,11 +102,11 @@ didWrite indicates if the operation completed successfully or not.
 **Change Password of a Sector**
 
 ```dart
-await  MifareNfcClassic.changePasswordOfSector(sectorIndex: _sectorIndex,newPassword: _newPassword,password:password);
+await  MifareNfcClassic.changePasswordOfSector(sectorIndex: _sectorIndex, newPassword: _newPassword, password: password);
 ```
 
 **Write Raw Hexadecimal**
 
 ```dart
-await  MifareNfcClassic.writeRawHexToBlock(blockIndex: _blockIndex,message: rawHex,password:password);
+await  MifareNfcClassic.writeRawHexToBlock(blockIndex: _blockIndex, message: rawHex, password: password);
 ```
