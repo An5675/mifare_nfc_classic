@@ -19,7 +19,9 @@ import java.io.IOException
 private const val TAG = "MifareNfcClassicPlugin"
 
 class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
-    private lateinit var activity: Activity
+    //private lateinit var activity: Activity
+    //private lateinit var channel: MethodChannel
+    private var activity: Activity? = null
     private lateinit var channel: MethodChannel
     private var mNfcAdapter: NfcAdapter? = null
     private lateinit var mifareClassic: MifareClassic
@@ -127,7 +129,7 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 mifareClassic = MifareClassic.get(tag)
                 mifareClassic.connect()
                 val sectorIndex = mifareClassic.blockToSector(blockIndex)
-                mifareClassic.authenticateSectorWithKeyA(sectorIndex, sectorPassword)
+                mifareClassic.authenticateSectorWithKeyB(sectorIndex, sectorPassword)
                 var blockBytes = mifareClassic.readBlock(blockIndex)
                 if (blockBytes.size < 16) {
                     throw IOException()
@@ -136,9 +138,9 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     blockBytes = blockBytes.copyOf(16)
                 }
                 Log.d(TAG, "readBlock: ${Utils.byteArray2Hex(blockBytes)}")
-                activity.runOnUiThread { result.success(Utils.byteArray2Hex(blockBytes)) }
+                activity?.runOnUiThread { result.success(Utils.byteArray2Hex(blockBytes)) }
             } catch (e: Exception) {
-                activity.runOnUiThread { result.error("404", e.localizedMessage, null) }
+                activity?.runOnUiThread { result.error("404", e.localizedMessage, null) }
             } finally {
                 mifareClassic.close()
                 mNfcAdapter?.disableReaderMode(activity)
@@ -162,7 +164,7 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 mifareClassic = MifareClassic.get(tag)
                 mifareClassic.connect()
                 val sectorIndex = mifareClassic.blockToSector(blockIndex)
-                mifareClassic.authenticateSectorWithKeyA(sectorIndex, sectorPassword)
+                mifareClassic.authenticateSectorWithKeyB(sectorIndex, sectorPassword)
                 mifareClassic.writeBlock(
                         blockIndex,
                         Utils.hex2ByteArray(messageAsHex)
@@ -174,7 +176,7 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 mifareClassic.close()
                 mNfcAdapter?.disableReaderMode(activity)
             }
-            activity.runOnUiThread { result.success(didWrite) }
+            activity?.runOnUiThread { result.success(didWrite) }
         }, flag, null)
     }
 
@@ -194,7 +196,7 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 mifareClassic.connect()
                 tagId = Utils.byteArray2Hex(tag.id)!!
                 val sectorIndex = mifareClassic.blockToSector(blockIndex)
-                mifareClassic.authenticateSectorWithKeyA(sectorIndex, sectorPassword)
+                mifareClassic.authenticateSectorWithKeyB(sectorIndex, sectorPassword)
                 toWrite = mifareClassic.readBlock(blockIndex)
                 val decList: ArrayList<Int> = arrayListOf()
                 for (i in message.indices step 2) {
@@ -219,7 +221,7 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             val resultMap = mutableMapOf<String, String>()
             resultMap["minutes"] = Utils.byteArray2Hex(toWrite)!!
             resultMap["cardId"] = tagId!!
-            activity.runOnUiThread { result.success(resultMap) }
+            activity?.runOnUiThread { result.success(resultMap) }
         }, flag, null)
 
 
@@ -238,7 +240,7 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 mifareClassic = MifareClassic.get(tag)
                 mifareClassic.connect()
                 val blockIndex = mifareClassic.sectorToBlock(sectorIndex) + 3
-                mifareClassic.authenticateSectorWithKeyA(sectorIndex, sectorPassword)
+                mifareClassic.authenticateSectorWithKeyB(sectorIndex, sectorPassword)
                 val toWrite = mifareClassic.readBlock(blockIndex)
                 val decList: ArrayList<Int> = arrayListOf()
                 for (i in newPassword.indices step 2) {
@@ -261,7 +263,7 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 mifareClassic.close()
                 mNfcAdapter?.disableReaderMode(activity)
             }
-            activity.runOnUiThread { result.success(didWrite) }
+            activity?.runOnUiThread { result.success(didWrite) }
         }, flag, null)
 
 
@@ -280,7 +282,7 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 mifareClassic.connect()
                 val sectorIndex = mifareClassic.blockToSector(blockIndex)
                 Log.d(TAG, "writeRawBlockOfSector: $sectorIndex $blockIndex")
-                mifareClassic.authenticateSectorWithKeyA(sectorIndex, sectorPassword)
+                mifareClassic.authenticateSectorWithKeyB(sectorIndex, sectorPassword)
                 val toWrite = Utils.rawHexToByteArray(hex = message)
                 Log.d(TAG, "writeRawBlockOfSector: ${toWrite.size}")
                 Log.d(TAG, "writeRawBlockOfSector: $toWrite")
@@ -296,7 +298,7 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 mifareClassic.close()
                 mNfcAdapter?.disableReaderMode(activity)
             }
-            activity.runOnUiThread { result.success(didWrite) }
+            activity?.runOnUiThread { result.success(didWrite) }
         }, flag, null)
     }
 
@@ -311,11 +313,11 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 }
                 mifareClassic = MifareClassic.get(tag)
                 mifareClassic.connect()
-                mifareClassic.authenticateSectorWithKeyA(sectorIndex, sectorPassword)
+                mifareClassic.authenticateSectorWithKeyB(sectorIndex, sectorPassword)
                 val sector = Utils.printEntireBlock(mifareClassic, sectorIndex)
-                activity.runOnUiThread { result.success(sector) }
+                activity?.runOnUiThread { result.success(sector) }
             } catch (e: Exception) {
-                activity.runOnUiThread { result.error("404", e.localizedMessage, null) }
+                activity?.runOnUiThread { result.error("404", e.localizedMessage, null) }
             } finally {
                 mifareClassic.close()
                 mNfcAdapter?.disableReaderMode(activity)
@@ -336,14 +338,14 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 mifareClassic = MifareClassic.get(tag)
                 mifareClassic.connect()
                 for (i in 0 until mifareClassic.sectorCount) {
-                    mifareClassic.authenticateSectorWithKeyA(i, sectorPassword)
+                    mifareClassic.authenticateSectorWithKeyB(i, sectorPassword)
                     response[i] = Utils.printEntireBlock(mifareClassic, i)
                 }
-                activity.runOnUiThread { result.success(response) }
+                activity?.runOnUiThread { result.success(response) }
 
             } catch (e: Exception) {
                 Log.e(TAG, "readAll: ", e)
-                activity.runOnUiThread { result.error("404", e.localizedMessage, null) }
+                activity?.runOnUiThread { result.error("404", e.localizedMessage, null) }
 
             } finally {
                 mifareClassic.close()
@@ -356,10 +358,10 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         mNfcAdapter?.enableReaderMode(activity, { tag ->
             try {
                 mifareClassic = MifareClassic.get(tag)
-                activity.runOnUiThread { result.success(mifareClassic.sectorCount) }
+                activity?.runOnUiThread { result.success(mifareClassic.sectorCount) }
             } catch (e: Exception) {
                 Log.e(TAG, "writeMifare: ", e)
-                activity.runOnUiThread { result.error("404", e.localizedMessage, null) }
+                activity?.runOnUiThread { result.error("404", e.localizedMessage, null) }
             } finally {
                 mNfcAdapter?.disableReaderMode(activity)
             }
@@ -370,10 +372,10 @@ class MifareNfcClassicPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         mNfcAdapter?.enableReaderMode(activity, { tag ->
             try {
                 mifareClassic = MifareClassic.get(tag)
-                activity.runOnUiThread { result.success(mifareClassic.blockCount) }
+                activity?.runOnUiThread { result.success(mifareClassic.blockCount) }
             } catch (e: Exception) {
                 Log.e(TAG, "writeMifare: ", e)
-                activity.runOnUiThread { result.error("404", e.localizedMessage, null) }
+                activity?.runOnUiThread { result.error("404", e.localizedMessage, null) }
             } finally {
                 mNfcAdapter?.disableReaderMode(activity)
             }
